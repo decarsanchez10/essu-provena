@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@paytaca/wizardconnect-vue": "github:paytaca/wizardconnect-vue",
+    "@wizardconnect/core": "^0.2.4",
+    "@wizardconnect/dapp": "^0.2.2",
+    "axios": "^1.17.0",
+    "cashscript": "^0.12.1",
+    "gsap": "^3.15.0",
+    "qrcode": "^1.5.3",
+    "qrcode.vue": "^3.9.1",
+    "watchtower-cash-js": "^0.3.1"
+  }
+}

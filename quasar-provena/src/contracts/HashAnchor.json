@@ -1,0 +1,46 @@
+{
+  "contractName": "HashAnchor",
+  "constructorInputs": [
+    {
+      "name": "documentHash",
+      "type": "bytes"
+    },
+    {
+      "name": "secretHash",
+      "type": "bytes32"
+    }
+  ],
+  "abi": [
+    {
+      "name": "publishHash",
+      "inputs": [
+        {
+          "name": "secret",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "bytecode": "OP_SWAP OP_ROT OP_HASH256 OP_EQUALVERIFY 6a 70726f76656e61 OP_SIZE OP_DUP 4b OP_GREATERTHAN OP_IF 4c OP_SWAP OP_CAT OP_ENDIF OP_SWAP OP_CAT OP_CAT OP_SWAP OP_SIZE OP_DUP 4b OP_GREATERTHAN OP_IF 4c OP_SWAP OP_CAT OP_ENDIF OP_SWAP OP_CAT OP_CAT OP_0 OP_OUTPUTBYTECODE OP_EQUAL",
+  "source": "pragma cashscript ^0.12.0;\n\ncontract HashAnchor(\n    bytes documentHash,\n    bytes32 secretHash\n) {\n    function publishHash(bytes secret) {\n        require(secretHash == hash256(secret));\n        bytes opReturn = new LockingBytecodeNullData([bytes(\"provena\"), documentHash]);\n        require(tx.outputs[0].lockingBytecode == opReturn);\n    }\n}",
+  "debug": {
+    "bytecode": "7c7baa88016a0770726f76656e618276014ba063014c7c7e687c7e7e7c8276014ba063014c7c7e687c7e7e00cd87",
+    "sourceMap": "8:16:8:26;:38::44;:30::45:1;:8::47;9:25:9:86:0;:60::69;:54::70:1;;;;;;;;;;;;:72::84:0;::::1;;;;;;;;;;;;10:27:10:28:0;:16::45:1;:8::59",
+    "logs": [],
+    "requires": [
+      {
+        "ip": 5,
+        "line": 8
+      },
+      {
+        "ip": 36,
+        "line": 10
+      }
+    ]
+  },
+  "compiler": {
+    "name": "cashc",
+    "version": "0.12.0"
+  },
+  "updatedAt": "2026-05-21T05:28:30.763Z"
+}

@@ -1,0 +1,12 @@
+pragma cashscript ^0.12.0;
+
+contract HashAnchor(
+    bytes documentHash,
+    bytes32 secretHash
+) {
+    function publishHash(bytes secret) {
+        require(secretHash == hash256(secret));
+        bytes opReturn = new LockingBytecodeNullData([bytes("provena"), documentHash]);
+        require(tx.outputs[0].lockingBytecode == opReturn);
+    }
+}

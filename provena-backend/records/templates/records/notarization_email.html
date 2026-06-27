@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Provena Document Notarization</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important;">
+
+  <!-- Wrapper Table -->
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f7f6; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        
+        <!-- Main Container -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.06);">
+          
+          <!-- Header / Brand Section -->
+          <tr>
+            <td align="center" style="background-color: #0b1a13; padding: 40px 30px;">
+              <h1 style="color: #22c55e; margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">PROVENA</h1>
+              <p style="color: #a3b8af; margin: 8px 0 0; font-size: 15px; letter-spacing: 1px; text-transform: uppercase;">Blockchain Notarization Service</p>
+            </td>
+          </tr>
+
+
+
+          <!-- Welcome Text -->
+          <tr>
+            <td style="padding: 40px 40px 20px 40px;">
+              <h2 style="color: #111827; margin: 0 0 16px; font-size: 24px; font-weight: 700;">Document Successfully Notarized!</h2>
+              <p style="color: #4b5563; margin: 0 0 24px; font-size: 16px; line-height: 1.6;">
+                Your document has been permanently anchored to the Bitcoin Cash blockchain. Below are your immutable cryptographic proofs.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Details Table Section -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px;">
+              
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                
+                <!-- Filename -->
+                <tr>
+                  <td style="padding: 20px 20px 10px 20px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Document Name</span><br>
+                    <span style="font-size: 16px; color: #0f172a; font-weight: 600; display: block; margin-top: 4px; word-break: break-all;">{{ filename }}</span>
+                  </td>
+                </tr>
+
+                <!-- Document Hash -->
+                <tr>
+                  <td style="padding: 10px 20px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">SHA-256 Hash</span><br>
+                    <span style="font-size: 14px; color: #22c55e; font-family: 'Courier New', monospace; display: block; margin-top: 4px; word-break: break-all;">{{ document_hash }}</span>
+                  </td>
+                </tr>
+
+                <!-- Public Key -->
+                <tr>
+                  <td style="padding: 10px 20px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Signer Public Key</span><br>
+                    <span style="font-size: 14px; color: #0f172a; font-family: 'Courier New', monospace; display: block; margin-top: 4px; word-break: break-all;">{{ public_key|default:"Not provided" }}</span>
+                  </td>
+                </tr>
+
+                <!-- Transaction ID -->
+                <tr>
+                  <td style="padding: 10px 20px 20px 20px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Transaction ID (TXID)</span><br>
+                    <span style="font-size: 14px; color: #0f172a; font-family: 'Courier New', monospace; display: block; margin-top: 4px; word-break: break-all;">{{ txid }}</span>
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Call to Action -->
+          <tr>
+            <td align="center" style="padding: 0 40px 40px 40px;">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="border-radius: 100px; background-color: #22c55e;">
+                    <a href="{{ explorer_url }}" target="_blank" style="font-size: 15px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 100px; padding: 14px 28px; border: 1px solid #22c55e; display: inline-block; font-weight: bold;">View on Block Explorer</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #f8fafc; padding: 30px; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0 0 10px; color: #64748b; font-size: 13px;">
+                <strong>Notarization Timestamp:</strong><br>
+                {{ created_at }}
+              </p>
+              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                © 2026 Provena. All rights reserved.<br>
+                This is an automated message. Please do not reply.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End Main Container -->
+
+      </td>
+    </tr>
+  </table>
+  <!-- End Wrapper -->
+
+</body>
+</html>
