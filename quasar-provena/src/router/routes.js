@@ -5,6 +5,7 @@ const routes = [
   { path: '/verify', component: () => import('pages/ProofViewer.vue') },
   { path: '/verify/:token', component: () => import('pages/ProofViewer.vue') },
   { path: '/about', component: () => import('pages/AboutPage.vue') },
+  { path: '/terms', name: 'terms', component: () => import('pages/TermsPage.vue') },
 
   // Always leave this as last one,
   // but you can also remove it

@@ -99,6 +99,16 @@
         <p class="email-hint">Receive a confirmation email with your notarization details and blockchain proof.</p>
       </div>
 
+      <div class="terms-option">
+        <label class="checkbox-label">
+          <input type="checkbox" v-model="termsAccepted" />
+          <span class="checkbox-text">
+            I agree to the
+            <router-link to="/terms" target="_blank">Terms and Conditions</router-link>
+          </span>
+        </label>
+      </div>
+
       <div class="card-actions">
         <button class="ghost-btn" @click="copyToClipboard(documentHash)">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -106,8 +116,8 @@
         </button>
         <button class="primary-btn"
           @click="proceedToSign"
-          :disabled="walletState !== 'connected'"
-          :title="walletState !== 'connected' ? 'Connect your Paytaca wallet first' : ''">
+          :disabled="walletState !== 'connected' || !termsAccepted"
+          :title="walletState !== 'connected' ? 'Connect your Paytaca wallet first' : !termsAccepted ? 'Please accept the Terms and Conditions' : ''">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Notarize to Blockchain
         </button>
@@ -176,7 +186,7 @@
           <div class="ival-row">
             <span class="ival mono">{{ truncateHash(notarizationRecord?.txid) }}</span>
             <button class="icon-btn" @click="copyToClipboard(notarizationRecord?.txid)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-            <a :href="`https://explorer.bitcoincash.org/tx/${notarizationRecord?.txid}`" target="_blank" class="icon-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+            <a :href="getExplorerTxUrl(notarizationRecord?.txid)" target="_blank" class="icon-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
           </div>
         </div>
         <div class="irow">
@@ -238,6 +248,7 @@ import { broadcastTransaction } from '../services/broadcastTransaction'
 import { saveNotarizationRecord } from '../services/saveNotarizationRecord'
 import { useWalletConnect } from '../composables/useWalletConnect'
 import Watchtower from 'watchtower-cash-js'
+import { API_BASE_URL, API_ENDPOINTS, EXPLORER_TX_URL } from '../config'
 
 const emit = defineEmits(['toast'])
 
@@ -280,6 +291,7 @@ const copyButtonLabel    = ref('Copy Hash')
 const notarizationRecord = ref(null)
 const uploadToServer     = ref(false)
 const notifyEmail        = ref('')
+const termsAccepted      = ref(false)
 const stages             = ref({ uploading: false, building: false, signing: false, broadcasting: false })
 const fileInput          = ref(null)
 const successGeneratedLink = ref(null)
@@ -390,7 +402,7 @@ async function handleFileSelect (e) {
 
     // Early exit if document already exists on backend or locally
     try {
-      const res = await fetch(`http://localhost:8000/api/records/check/${computedHash}/`)
+      const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS_CHECK(computedHash)}`)
       if (res.ok) {
         const data = await res.json()
         if (data.exists) {
@@ -429,6 +441,7 @@ function resetFlow () {
   errorTitle.value         = ''
   uploadToServer.value     = false
   notifyEmail.value        = ''
+  termsAccepted.value      = false
   notarizationRecord.value = null
   successGeneratedLink.value = null
   selectedFile.value       = null
@@ -453,7 +466,7 @@ async function proceedToSign () {
 
   // Early exit if document already exists on backend or locally to enforce one‑time upload
   try {
-    const res = await fetch(`http://localhost:8000/api/records/check/${documentHash.value}/`)
+    const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS_CHECK(documentHash.value)}`)
     if (res.ok) {
       const data = await res.json()
       if (data.exists) {
@@ -554,7 +567,7 @@ async function proceedToSign () {
         formData.append('file', selectedFile.value)
       }
 
-      const res = await fetch('http://localhost:8000/api/records/', {
+      const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS}`, {
         method: 'POST',
         body: formData
       })
@@ -565,7 +578,7 @@ async function proceedToSign () {
       if (uploaded) emit('toast', 'Upload complete.')
 
       try {
-        const linkRes = await fetch(`http://localhost:8000/api/records/${recordId}/generate-link/`, { method: 'POST' })
+        const linkRes = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS_GENERATE_LINK(recordId)}`, { method: 'POST' })
         if (linkRes.ok) {
           const linkData = await linkRes.json()
           successGeneratedLink.value = `${window.location.origin}/#/verify/${linkData.token}`
@@ -597,7 +610,7 @@ async function proceedToSign () {
     if (notifyEmail.value) {
       try {
         emit('toast', 'Sending confirmation email...')
-        const emailRes = await fetch('http://localhost:8000/api/records/send-email/', {
+        const emailRes = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS_SEND_EMAIL}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -660,6 +673,10 @@ function copyToClipboard (text) {
 function truncateHash (hash) {
   if (!hash) return ''
   return hash.length > 32 ? hash.slice(0, 14) + '…' + hash.slice(-14) : hash
+}
+
+function getExplorerTxUrl (txid) {
+  return EXPLORER_TX_URL(txid)
 }
 
 function formatTimestamp (ts) {
@@ -769,6 +786,23 @@ function viewHistory () {
 .upload-warning svg {
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+/* ── Terms Option ── */
+.terms-option {
+  margin-bottom: 24px;
+  background: var(--bgc);
+  border: 1px solid var(--gb);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.terms-option .checkbox-text a {
+  color: var(--g);
+  text-decoration: none;
+  font-weight: 700;
+}
+.terms-option .checkbox-text a:hover {
+  text-decoration: underline;
 }
 
 /* ── Upload pane ── */

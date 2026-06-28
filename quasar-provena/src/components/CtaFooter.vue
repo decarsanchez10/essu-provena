@@ -15,12 +15,12 @@
     </section>
 
     <footer>
-      <a href="#" class="logo">PR<span class="coin">₿</span>VENA</a>
+      <router-link to="/" class="logo">PR<span class="coin">₿</span>VENA</router-link>
       <ul class="fl">
-        <li><a href="#how" @click.prevent="scrollTo('how')">How It Works</a></li>
+        <li><router-link to="/about">About</router-link></li>
         <li><router-link to="/notarize">Notarize</router-link></li>
-        <li><a href="#">Privacy</a></li>
-        <li><a href="#">Terms</a></li>
+        <li><router-link to="/verify">Verify</router-link></li>
+        <li><router-link to="/terms">Terms</router-link></li>
       </ul>
       <div class="fc">© 2026 Provena · Blockchain Document Notary</div>
     </footer>
@@ -29,29 +29,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useScrollAnimate } from '../composables/useScrollAnimate.js'
 
-const router = useRouter()
 const ctaEl = ref(null)
 const videoEl = ref(null)
 const HLS_SRC = 'https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo.m3u8'
 
 useScrollAnimate(() => ctaEl.value, 'zoomOut', { duration: 900, infinite: true })
-
-function scrollTo(id) { 
-  // If on home page, scroll to section
-  if (router.currentRoute.value.path === '/') {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  } else {
-    // Otherwise navigate home and scroll after navigation
-    router.push('/').then(() => {
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
-    })
-  }
-}
 
 onMounted(async () => {
   const video = videoEl.value

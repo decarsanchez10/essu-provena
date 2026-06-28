@@ -213,7 +213,7 @@
             <span class="ikey">Transaction ID</span>
             <div class="ival-row">
               <span class="ival mono">{{ record.txid }}</span>
-              <a :href="`https://bchexplorer.info/tx/${record.txid}`" target="_blank" class="icon-btn" title="View on Explorer">
+              <a :href="getExplorerTxUrlLocal(record.txid)" target="_blank" class="icon-btn" title="View on Explorer">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               </a>
             </div>
@@ -270,6 +270,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { gsap } from 'gsap'
 import { useRoute, useRouter } from 'vue-router'
+import { API_BASE_URL, API_ENDPOINTS, EXPLORER_TX_URL } from '../config'
 
 const route  = useRoute()
 const router = useRouter()
@@ -298,6 +299,10 @@ const isPdf = computed(() => {
   return /\.pdf$/i.test(record.value.file_name)
 })
 
+function getExplorerTxUrlLocal(txid) {
+  return EXPLORER_TX_URL(txid)
+}
+
 function extractToken(input) {
   const trimmed  = input.trim()
   const urlMatch = trimmed.match(/\/verify\/([a-f0-9-]+)/i)
@@ -314,7 +319,7 @@ async function verifyToken(token) {
   record.value        = null
   showInputForm.value = false
   try {
-    const res = await fetch(`http://localhost:8000/api/records/verify/${token}/`)
+    const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS_VERIFY(token)}`)
     if (!res.ok) { router.replace('/404'); return }
     record.value = await res.json()
   } catch {
@@ -337,7 +342,7 @@ async function docLookUpHash() {
   if (!docComputedHash.value) return
   docIsLookingUp.value = true
   try {
-    const res = await fetch(`http://localhost:8000/api/records/lookup/?hash=${docComputedHash.value}`)
+    const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.RECORDS_LOOKUP}?hash=${docComputedHash.value}`)
     if (res.status === 404) { docResult.value = { found: false }; return }
     if (!res.ok) { console.error('Lookup failed:', res.status); return }
     

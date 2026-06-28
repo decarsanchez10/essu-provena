@@ -56,7 +56,14 @@ import { onMounted, onBeforeUnmount, ref } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { gsap } from 'gsap'
-import modelUrl from '../assets/base_basic_shaded.glb?url'
+
+// Model URL - handle gracefully if file doesn't exist
+let modelUrl = ''
+try {
+  modelUrl = new URL('../assets/base_basic_shaded.glb', import.meta.url).href
+} catch {
+  console.warn('3D model not found, using fallback')
+}
 
 const container3D = ref(null)
 
@@ -98,32 +105,31 @@ function initThreeJS() {
   renderer.setPixelRatio(window.devicePixelRatio)
   container3D.value.appendChild(renderer.domElement)
 
-  // Load Model
-  const loader = new GLTFLoader()
-  loader.load(
-    modelUrl,
-    function (gltf) {
-      modelInstance = gltf.scene
-      // Scale down the model (increased slightly from previous value)
-      modelInstance.scale.set(0.8, 0.8, 0.8) 
-      scene.add(modelInstance)
+  // Load Model (if URL is available)
+  if (modelUrl) {
+    const loader = new GLTFLoader()
+    loader.load(
+      modelUrl,
+      function (gltf) {
+        modelInstance = gltf.scene
+        modelInstance.scale.set(0.8, 0.8, 0.8)
+        scene.add(modelInstance)
 
-      // Initialize animation if present
-      if (gltf.animations && gltf.animations.length > 0) {
-        mixer = new THREE.AnimationMixer(modelInstance)
-        mixer.clipAction(gltf.animations[0]).play()
+        if (gltf.animations && gltf.animations.length > 0) {
+          mixer = new THREE.AnimationMixer(modelInstance)
+          mixer.clipAction(gltf.animations[0]).play()
+        }
+
+        modelMove()
+      },
+      function (xhr) {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded')
+      },
+      function (error) {
+        console.warn('Model loading skipped or failed:', error)
       }
-
-      // Initial position sync
-      modelMove()
-    },
-    function (xhr) {
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded')
-    },
-    function (error) {
-      console.error('An error occurred loading the model:', error)
-    }
-  )
+    )
+  }
 
   // Render loop
   const clock = new THREE.Clock()

@@ -1,0 +1,1 @@
+import{t as e}from"./wrappers-CojxLOXo.js";var t=e(()=>{typeof BigInt<`u`&&!BigInt.prototype.toJSON&&(console.log(`🚀 BigInt JSON patch applied`),Object.defineProperty(BigInt.prototype,`toJSON`,{value:function(){return this.toString()},configurable:!0,enumerable:!1,writable:!0}))});export{t as default};
